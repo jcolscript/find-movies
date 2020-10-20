@@ -1,0 +1,44 @@
+* {
+  margin: 0;
+  padding: 0;
+  outline: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background: #312e38;
+  color: #fff;
+  -webkit-font-smoothing: antialiased;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+.centerToTop {
+  animation: move 1s forwards;
+}
+
+.topToCenter {
+  animation: move2 1s forwards;
+}
+
+@keyframes move {
+  from {
+    top: 50%;
+  }
+  to {
+    top: 5%;
+  }
+}
+
+@keyframes move2 {
+  from {
+    top: 5%;
+  }
+  to {
+    top: 50%;
+  }
+}
