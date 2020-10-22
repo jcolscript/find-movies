@@ -1,19 +1,40 @@
-import React, { useCallback, useState  } from 'react';
+import React, { useCallback, useState, useRef  } from 'react';
 
 import MovieCard from '../../components/MovieCard'
 
 import { SearchBox } from './styles'
 
-import {IResponseMovies, IMoviesSimpleData} from '../../infra/interfaces/movies.interfaces'
-
-import { client } from  '../../infra/services/client';
-
-import endpoints from '../../infra/services/endpoints';
+import useMoviesSearch from '../../hooks/use-movies-search'
 
 const Main:React.FC = () => {
-  const [searchBoxUp, setSearchBoxUp] = useState(false);
   const [searchMovieParameter, setSearchMovieParameter] = useState('');
-  const [movies, setMovies] = useState<IMoviesSimpleData[]>([]);
+  const [searchMovieQuery, setSearchMovieQuery] = useState('');
+  const [page, setPage] = useState(1);
+
+  const {
+    movies,
+    setMovies,
+    hasMore,
+    loading,
+    searchBoxUp,
+    setSearchBoxUp
+  } = useMoviesSearch(searchMovieQuery, page);
+
+  const observer = useRef<IntersectionObserver | null>(null);
+
+  const lastMovieElementRef = useCallback(node => {
+    if (loading) return observer.current
+    if (observer.current) observer.current.disconnect()
+
+    observer.current = new IntersectionObserver(entries => {
+      if (entries[0].isIntersecting && hasMore) {
+        setPage(state => state + 1)
+      }
+    })
+
+    if (node) observer.current.observe(node)
+  }, [loading, hasMore])
+
 
   function handleChangeSearchMovie(e: any) {
     setSearchMovieParameter(e.target.value);
@@ -21,6 +42,7 @@ const Main:React.FC = () => {
   }
 
   const handleSearchMovie = useCallback( async () => {
+    setMovies([]);
     console.log(searchMovieParameter)
 
     if (!searchMovieParameter) {
@@ -30,23 +52,9 @@ const Main:React.FC = () => {
       return;
     }
 
-    try {
-      const { data } = await client.get<IResponseMovies>(endpoints.getMovies(searchMovieParameter));
-      console.log(data.Search);
-      if(data.Search && data.Search.length > 0) {
-        setMovies(data.Search)
-        setSearchBoxUp(true)
-      } else {
-        setMovies([])
-        setSearchBoxUp(false)
-      }
-    } catch (error) {
-      console.log('Erro ao buscar o filme!');
-      setMovies([])
-      setSearchBoxUp(false)
-    }
+    setSearchMovieQuery(searchMovieParameter);
 
-  }, [searchMovieParameter]);
+  }, [searchMovieParameter, page]);
 
   return (
     <div className="container h-100 d-flex">
@@ -62,9 +70,15 @@ const Main:React.FC = () => {
         <button type="submit" onClick={handleSearchMovie} className="btn btn-primary btn-lg ml-2">Buscar</button>
       </SearchBox>
       <div className="row mt-5 py-5">
-        {movies.map((movie) => (
-          <MovieCard {...movie} key={movie.imdbID}/>
-        ))}
+        {
+          movies.map((movie, index) => {
+            if(movies.length === index + 1) {
+              return <MovieCard ref={lastMovieElementRef} {...movie} key={movie.imdbID}/>
+            } else {
+              return <MovieCard {...movie} key={movie.imdbID}/>
+            }
+          }
+        )}
       </div>
     </div>
   );
