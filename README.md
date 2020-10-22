@@ -5,12 +5,6 @@ Find Movies
 
 <p align="center">A React (typescript) application for explorering movies in IMDB.</p>
 
-<div>
-  <p align="center">
-    <img src="https://i.imgur.com/Po0eip1.gif" alt="demo-web" width="800">
-  <p align="center">
-</div>
-
 <hr />
 
 ## Recursos
