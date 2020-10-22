@@ -42,3 +42,7 @@ body,
     top: 50%;
   }
 }
+
+.bg-brand {
+  background: #312e38;
+}
