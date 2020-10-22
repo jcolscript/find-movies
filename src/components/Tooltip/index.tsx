@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 import { Container } from './styles'
 
@@ -9,9 +10,9 @@ const Tooltip: React.FC<IMoviesSimpleData> = ({Title, Type, Year, imdbID, childr
     <Container>
       {children}
       <div>
-        <h6>
+        <h5>
           {Title}
-        </h6>
+        </h5>
         <div>
           <strong>Tipo:</strong>
           <span>{Type}</span>
@@ -24,7 +25,7 @@ const Tooltip: React.FC<IMoviesSimpleData> = ({Title, Type, Year, imdbID, childr
           <strong>imdbID:</strong>
           <span>{imdbID}</span>
         </div>
-        <a href="/">Mais Info</a>
+        <Link to={`/movie/${imdbID}`}>Mais Info</Link>
       </div>
     </Container>
   );
